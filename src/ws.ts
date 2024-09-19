@@ -40,6 +40,7 @@ server.on('connection', connection => {
                         strictPlayer: game.strictPlayer
                     }
                 }
+                console.log('send', initPacket)
                 game.connections.push(connection)
                 connection.send(JSON.stringify(initPacket))
             } break
@@ -48,6 +49,7 @@ server.on('connection', connection => {
                 if (!game) {
                     break
                 }
+                console.log('send', 'relay')
                 for (const con of game.connections.filter(con => con != connection)) {
                     con.send(JSON.stringify(packet))
                 }
@@ -68,6 +70,7 @@ server.on('connection', connection => {
                 player: i
             }
         }
+        console.log('send', packet)
         for (const con of game.connections.filter(con => con != connection)) {
             con.send(JSON.stringify(packet))
         }
