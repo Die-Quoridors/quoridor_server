@@ -6,6 +6,13 @@ export interface GamePacketGameJoin {
     }
 }
 
+export interface GamePacketGameLeave {
+    event: 'gameLeave'
+    data: {
+        player: number
+    }
+}
+
 export interface GamePacketGameInit {
     event: 'gameInit'
     data: {
