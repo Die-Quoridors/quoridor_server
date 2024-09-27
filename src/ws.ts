@@ -14,11 +14,13 @@ server.on('connection', connection => {
     console.log('connected')
 
     let gameId: string | undefined = undefined
-    let game: Game | undefined = undefined
 
     connection.on('message', msg => {
         const packet: GamePacket = JSON.parse(msg.toString())
         console.log('message', packet)
+
+        let game = gameId ? games.get(gameId) : undefined
+
         switch (packet.event) {
             case 'gameJoin': {
                 gameId = packet.data.game
@@ -62,9 +64,10 @@ server.on('connection', connection => {
     })
 
     connection.once('close', () => {
-        if (!game || !gameId) {
+        if (!gameId || !games.has(gameId)) {
             return
         }
+        const game = games.get(gameId)!
         const i = game.connections.findIndex(con => con.socket == connection)
         game.connections.splice(i, 1)
 
