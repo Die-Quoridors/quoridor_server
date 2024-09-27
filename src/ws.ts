@@ -59,7 +59,7 @@ server.on('connection', connection => {
                 }
 
                 const playerIndex = game.connections.findIndex(c => c.playerId == playerId)
-                const nextPlayerIndex = playerIndex >= game.connections.length ? 0 : playerIndex + 1
+                const nextPlayerIndex = playerIndex + 1 >= game.connections.length ? 0 : playerIndex + 1
                 game.currentPlayer = game.connections[nextPlayerIndex].playerId
 
                 const nextPlayerPacket: GamePacketNextPlayer = {
@@ -99,6 +99,7 @@ server.on('connection', connection => {
         }
 
         if (game.connections.length == 0) {
+            console.log('delete game', gameId)
             games.delete(gameId)
         }
     })
