@@ -83,9 +83,12 @@ server.on('connection', connection => {
                 }
 
                 console.log('send', 'relay')
-                console.log('send', nextPlayerPacket)
                 for (const con of game.connections.filter(con => con.socket != connection)) {
                     con.socket.send(JSON.stringify(packet))
+                }
+
+                console.log('send', nextPlayerPacket)
+                for (const con of game.connections) {
                     con.socket.send(JSON.stringify(nextPlayerPacket))
                 }
             } break
