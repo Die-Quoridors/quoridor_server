@@ -32,8 +32,7 @@ server.on('connection', connection => {
                     }))
                     break
                 }
-                const playerId = new Array(game.playerCount).fill(1).map((v, i) => i).filter(v => !game!.playerIds.includes(v))[0]
-                game.playerIds.push(playerId)
+                const playerId = new Array(game.playerCount).fill(1).map((v, i) => i).filter(v => !game!.connections.some(con => con.playerId == v))[0]
                 const initPacket: GamePacketGameInit = {
                     event: 'gameInit',
                     data: {
@@ -43,7 +42,10 @@ server.on('connection', connection => {
                     }
                 }
                 console.log('send', initPacket)
-                game.connections.push(connection)
+                game.connections.push({
+                    socket: connection,
+                    playerId
+                })
                 connection.send(JSON.stringify(initPacket))
             } break
             case 'wallPlace':
@@ -52,8 +54,8 @@ server.on('connection', connection => {
                     break
                 }
                 console.log('send', 'relay')
-                for (const con of game.connections.filter(con => con != connection)) {
-                    con.send(JSON.stringify(packet))
+                for (const con of game.connections.filter(con => con.socket != connection)) {
+                    con.socket.send(JSON.stringify(packet))
                 }
             } break
         }
@@ -63,9 +65,8 @@ server.on('connection', connection => {
         if (!game || !gameId) {
             return
         }
-        const i = game.connections.findIndex(con => con == connection)
+        const i = game.connections.findIndex(con => con.socket == connection)
         game.connections.splice(i, 1)
-        game.playerIds.splice(i, 1)
 
         const packet: GamePacketGameLeave = {
             event: 'gameLeave',
@@ -74,8 +75,8 @@ server.on('connection', connection => {
             }
         }
         console.log('send', packet)
-        for (const con of game.connections.filter(con => con != connection)) {
-            con.send(JSON.stringify(packet))
+        for (const con of game.connections.filter(con => con.socket != connection)) {
+            con.socket.send(JSON.stringify(packet))
         }
 
         if (game.connections.length == 0) {

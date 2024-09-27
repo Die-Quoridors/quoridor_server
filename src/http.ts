@@ -30,8 +30,7 @@ app.post<any, any, any, GameCreateBody>('/game', (req, res) => {
         playerCount,
         wallLimit,
         strictPlayer: true,
-        connections: [],
-        playerIds: []
+        connections: []
     })
     res.json({
         gameId
