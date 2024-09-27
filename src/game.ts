@@ -1,4 +1,26 @@
 import ws from 'ws'
+import { v4 as uuid } from 'uuid'
+
+export const playerStartPosMap: Pos[] = [
+    { x: 4, y: 0 },
+    { x: 4, y: 8 },
+    { x: 0, y: 4 },
+    { x: 8, y: 4 }
+]
+
+interface Pos {
+    x: number
+    y: number
+}
+
+export enum WallRotation {
+    Vertical = 'Vertical',
+    Horizontal = 'Horizontal'
+}
+
+interface Wall extends Pos {
+    rotation: WallRotation
+}
 
 export interface Game {
     strictPlayer: boolean
@@ -9,6 +31,33 @@ export interface Game {
         playerId: number
     }[]
     currentPlayer: number
+    positions: {
+        players: Pos[]
+        walls: Wall[]
+    }
 }
 
 export const games = new Map<String, Game>()
+
+export const createGame = (playerCount: number, wallLimit: number) => {
+    const players: Pos[] = []
+
+    for (let i = 0; i < playerCount; i++) {
+        players.push({...playerStartPosMap[i]})
+    }
+
+    const gameId = uuid()
+    games.set(gameId, {
+        playerCount,
+        wallLimit,
+        strictPlayer: true,
+        connections: [],
+        currentPlayer: 0,
+        positions: {
+            players,
+            walls: []
+        }
+    })
+
+    return gameId
+}

@@ -1,6 +1,5 @@
 import express from 'express'
-import { v4 as uuid } from 'uuid'
-import { games } from './game'
+import { createGame, games } from './game'
 
 const app = express()
 app.use(express.json())
@@ -25,14 +24,7 @@ app.post<any, any, any, GameCreateBody>('/game', (req, res) => {
         return
     }
 
-    const gameId = uuid()
-    games.set(gameId, {
-        playerCount,
-        wallLimit,
-        strictPlayer: true,
-        connections: [],
-        currentPlayer: 0
-    })
+    const gameId = createGame(playerCount, wallLimit)
     res.json({
         gameId
     })

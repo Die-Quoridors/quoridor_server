@@ -1,5 +1,5 @@
 import ws from 'ws'
-import { Game, games } from './game'
+import { Game, games, WallRotation } from './game'
 import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer, GamePacketPlayerJoin } from './packet'
 
 const server = new ws.WebSocketServer({
@@ -90,6 +90,22 @@ server.on('connection', connection => {
                 console.log('send', nextPlayerPacket)
                 for (const con of game.connections) {
                     con.socket.send(JSON.stringify(nextPlayerPacket))
+                }
+
+                switch (packet.event) {
+                    case 'playerMove': {
+                        game.positions.players[packet.data.player] = {
+                            x: packet.data.x,
+                            y: packet.data.y
+                        }
+                    } break
+                    case 'wallPlace': {
+                        game.positions.walls.push({
+                            x: packet.data.x,
+                            y: packet.data.y,
+                            rotation: packet.data.roation as WallRotation
+                        })
+                    } break
                 }
             } break
         }
