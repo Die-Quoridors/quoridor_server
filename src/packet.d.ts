@@ -1,3 +1,4 @@
+import { Positions } from "./game"
 
 export interface GamePacketGameJoin {
     event: 'gameJoin'
@@ -56,4 +57,14 @@ export interface GamePacketPlayerJoin {
     }
 }
 
-export type GamePacket = GamePacketGameJoin | GamePacketGameInit | GamePacketPlayerMove | GamePacketWallPlace | GamePacketNextPlayer | GamePacketPlayerJoin
+export interface GamePacketSyncRequest {
+    event: 'syncRequest',
+    data: {}
+}
+
+export interface GamePacketSyncResponse {
+    event: 'syncResponse',
+    data: Positions
+}
+
+export type GamePacket = GamePacketGameJoin | GamePacketGameInit | GamePacketPlayerMove | GamePacketWallPlace | GamePacketNextPlayer | GamePacketPlayerJoin | GamePacketSyncRequest | GamePacketSyncResponse

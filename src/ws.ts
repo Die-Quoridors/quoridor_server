@@ -1,6 +1,6 @@
 import ws from 'ws'
 import { Game, games, WallRotation } from './game'
-import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer, GamePacketPlayerJoin } from './packet'
+import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer, GamePacketPlayerJoin, GamePacketSyncResponse } from './packet'
 
 const server = new ws.WebSocketServer({
     port: 8080
@@ -64,10 +64,20 @@ server.on('connection', connection => {
                     playerId
                 })
                 connection.send(JSON.stringify(initPacket))
+            } // break
+            case 'syncRequest': {
+                if (!game) {
+                    break
+                }
+                const syncPacket: GamePacketSyncResponse = {
+                    event: 'syncResponse',
+                    data: game.positions
+                }
+                connection.send(JSON.stringify(syncPacket))
             } break
             case 'wallPlace':
             case 'playerMove': {
-                if (!game) {
+                if (!game || packet.data.player != playerId) {
                     break
                 }
 
@@ -103,7 +113,8 @@ server.on('connection', connection => {
                         game.positions.walls.push({
                             x: packet.data.x,
                             y: packet.data.y,
-                            rotation: packet.data.roation as WallRotation
+                            rotation: packet.data.roation as WallRotation,
+                            placer: packet.data.player
                         })
                     } break
                 }

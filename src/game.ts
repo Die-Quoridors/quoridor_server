@@ -8,7 +8,7 @@ export const playerStartPosMap: Pos[] = [
     { x: 8, y: 4 }
 ]
 
-interface Pos {
+export interface Pos {
     x: number
     y: number
 }
@@ -18,8 +18,14 @@ export enum WallRotation {
     Horizontal = 'Horizontal'
 }
 
-interface Wall extends Pos {
+export interface Wall extends Pos {
     rotation: WallRotation
+    placer: number
+}
+
+export interface Positions {
+    players: Pos[]
+    walls: Wall[]
 }
 
 export interface Game {
@@ -31,10 +37,7 @@ export interface Game {
         playerId: number
     }[]
     currentPlayer: number
-    positions: {
-        players: Pos[]
-        walls: Wall[]
-    }
+    positions: Positions
 }
 
 export const games = new Map<String, Game>()
