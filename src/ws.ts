@@ -103,7 +103,7 @@ server.on('connection', connection => {
         const packet: GamePacketGameLeave = {
             event: 'gameLeave',
             data: {
-                player: i
+                player: playerId!
             }
         }
         console.log('send', packet)
