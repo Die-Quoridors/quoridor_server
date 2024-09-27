@@ -8,6 +8,14 @@ export const playerStartPosMap: Pos[] = [
     { x: 8, y: 4 }
 ]
 
+export const playerTurnMappings = [
+    [],
+    [0],
+    [0, 1],
+    [0, 1, 2],
+    [0, 3, 1, 2]
+]
+
 export interface Pos {
     x: number
     y: number
@@ -63,4 +71,11 @@ export const createGame = (playerCount: number, wallLimit: number) => {
     })
 
     return gameId
+}
+
+export const calculateNextTurn = (playerCount: number, currentTurn: number) => {
+    const turnMappings = playerTurnMappings[playerCount]
+    const turnStage = turnMappings.reduce((p, v, i) => v == currentTurn ? i : p, -1)
+    const nextTurnStage = turnStage + 1 >= playerCount ? 0 : turnStage + 1
+    return turnMappings[nextTurnStage]
 }

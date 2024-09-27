@@ -1,5 +1,5 @@
 import ws from 'ws'
-import { Game, games, WallRotation } from './game'
+import { calculateNextTurn, Game, games, WallRotation } from './game'
 import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer, GamePacketPlayerJoin, GamePacketSyncResponse } from './packet'
 
 const server = new ws.WebSocketServer({
@@ -81,9 +81,10 @@ server.on('connection', connection => {
                     break
                 }
 
-                const playerIndex = game.connections.findIndex(c => c.playerId == playerId)
-                const nextPlayerIndex = playerIndex + 1 >= game.connections.length ? 0 : playerIndex + 1
-                game.currentPlayer = game.connections[nextPlayerIndex].playerId
+                for (let i = false; !i || !game.connections.find(c => c.playerId == game?.currentPlayer); i = true) {
+                    game.currentPlayer = calculateNextTurn(game.playerCount, i ? game.currentPlayer : playerId)
+                }
+                
 
                 const nextPlayerPacket: GamePacketNextPlayer = {
                     event: 'nextPlayer',
