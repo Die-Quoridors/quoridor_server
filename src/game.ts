@@ -5,6 +5,7 @@ export interface Game {
     playerCount: number
     wallLimit: number
     connections: ws[]
+    playerIds: number[]
 }
 
 export const games = new Map<String, Game>()

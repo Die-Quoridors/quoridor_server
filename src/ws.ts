@@ -32,10 +32,12 @@ server.on('connection', connection => {
                     }))
                     break
                 }
+                const playerId = new Array(game.playerCount).fill(1).map((v, i) => i).filter(v => !game!.playerIds.includes(v))[0]
+                game.playerIds.push(playerId)
                 const initPacket: GamePacketGameInit = {
                     event: 'gameInit',
                     data: {
-                        player: game.connections.length,
+                        player: playerId,
                         playerCount: game.playerCount,
                         strictPlayer: game.strictPlayer
                     }
@@ -63,6 +65,7 @@ server.on('connection', connection => {
         }
         const i = game.connections.findIndex(con => con == connection)
         game.connections.splice(i, 1)
+        game.playerIds.splice(i, 1)
 
         const packet: GamePacketGameLeave = {
             event: 'gameLeave',
