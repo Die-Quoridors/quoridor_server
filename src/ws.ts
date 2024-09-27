@@ -1,6 +1,6 @@
 import ws from 'ws'
 import { Game, games } from './game'
-import { GamePacket, GamePacketGameInit, GamePacketGameLeave } from './packet'
+import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer } from './packet'
 
 const server = new ws.WebSocketServer({
     port: 8080
@@ -14,6 +14,7 @@ server.on('connection', connection => {
     console.log('connected')
 
     let gameId: string | undefined = undefined
+    let playerId: number | undefined = undefined
 
     connection.on('message', msg => {
         const packet: GamePacket = JSON.parse(msg.toString())
@@ -34,13 +35,14 @@ server.on('connection', connection => {
                     }))
                     break
                 }
-                const playerId = new Array(game.playerCount).fill(1).map((v, i) => i).filter(v => !game!.connections.some(con => con.playerId == v))[0]
+                playerId = new Array(game.playerCount).fill(1).map((v, i) => i).filter(v => !game!.connections.some(con => con.playerId == v))[0]
                 const initPacket: GamePacketGameInit = {
                     event: 'gameInit',
                     data: {
                         player: playerId,
                         playerCount: game.playerCount,
-                        strictPlayer: game.strictPlayer
+                        strictPlayer: game.strictPlayer,
+                        currentPlayer: game.currentPlayer
                     }
                 }
                 console.log('send', initPacket)
@@ -55,9 +57,23 @@ server.on('connection', connection => {
                 if (!game) {
                     break
                 }
+
+                const playerIndex = game.connections.findIndex(c => c.playerId == playerId)
+                const nextPlayerIndex = playerIndex >= game.connections.length ? 0 : playerIndex + 1
+                game.currentPlayer = game.connections[nextPlayerIndex].playerId
+
+                const nextPlayerPacket: GamePacketNextPlayer = {
+                    event: 'nextPlayer',
+                    data: {
+                        playerId: game.currentPlayer
+                    }
+                }
+
                 console.log('send', 'relay')
+                console.log('send', nextPlayerPacket)
                 for (const con of game.connections.filter(con => con.socket != connection)) {
                     con.socket.send(JSON.stringify(packet))
+                    con.socket.send(JSON.stringify(nextPlayerPacket))
                 }
             } break
         }

@@ -19,6 +19,7 @@ export interface GamePacketGameInit {
         player: number
         playerCount: number
         strictPlayer: boolean
+        currentPlayer: number
     }
 }
 
@@ -41,4 +42,11 @@ export interface GamePacketWallPlace {
     }
 }
 
-export type GamePacket = GamePacketGameJoin | GamePacketGameInit | GamePacketPlayerMove | GamePacketWallPlace
+export interface GamePacketNextPlayer {
+    event: 'nextPlayer',
+    data: {
+        playerId: number
+    }
+}
+
+export type GamePacket = GamePacketGameJoin | GamePacketGameInit | GamePacketPlayerMove | GamePacketWallPlace | GamePacketNextPlayer

@@ -8,6 +8,7 @@ export interface Game {
         socket: ws
         playerId: number
     }[]
+    currentPlayer: number
 }
 
 export const games = new Map<String, Game>()
