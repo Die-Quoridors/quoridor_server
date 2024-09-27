@@ -1,6 +1,6 @@
 import ws from 'ws'
 import { Game, games } from './game'
-import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer } from './packet'
+import { GamePacket, GamePacketGameInit, GamePacketGameLeave, GamePacketNextPlayer, GamePacketPlayerJoin } from './packet'
 
 const server = new ws.WebSocketServer({
     port: 8080
@@ -45,6 +45,19 @@ server.on('connection', connection => {
                         currentPlayer: game.currentPlayer
                     }
                 }
+
+                const joinPacket: GamePacketPlayerJoin = {
+                    event: 'playerJoin',
+                    data: {
+                        player: playerId
+                    }
+                }
+
+                console.log('send', joinPacket)
+                for (const con of game.connections.filter(con => con.socket != connection)) {
+                    con.socket.send(JSON.stringify(joinPacket))
+                }
+
                 console.log('send', initPacket)
                 game.connections.push({
                     socket: connection,
@@ -65,7 +78,7 @@ server.on('connection', connection => {
                 const nextPlayerPacket: GamePacketNextPlayer = {
                     event: 'nextPlayer',
                     data: {
-                        playerId: game.currentPlayer
+                        player: game.currentPlayer
                     }
                 }
 

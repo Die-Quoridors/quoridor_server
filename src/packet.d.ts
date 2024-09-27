@@ -45,8 +45,15 @@ export interface GamePacketWallPlace {
 export interface GamePacketNextPlayer {
     event: 'nextPlayer',
     data: {
-        playerId: number
+        player: number
     }
 }
 
-export type GamePacket = GamePacketGameJoin | GamePacketGameInit | GamePacketPlayerMove | GamePacketWallPlace | GamePacketNextPlayer
+export interface GamePacketPlayerJoin {
+    event: 'playerJoin',
+    data: {
+        player: number
+    }
+}
+
+export type GamePacket = GamePacketGameJoin | GamePacketGameInit | GamePacketPlayerMove | GamePacketWallPlace | GamePacketNextPlayer | GamePacketPlayerJoin
