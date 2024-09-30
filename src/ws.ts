@@ -114,7 +114,7 @@ server.on('connection', connection => {
                         game.positions.walls.push({
                             x: packet.data.x,
                             y: packet.data.y,
-                            rotation: packet.data.roation as WallRotation,
+                            rotation: packet.data.rotation as WallRotation,
                             placer: packet.data.player
                         })
                     } break

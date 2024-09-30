@@ -39,7 +39,7 @@ export interface GamePacketWallPlace {
         player: number
         x: number
         y: number
-        roation: string
+        rotation: string
     }
 }
 
